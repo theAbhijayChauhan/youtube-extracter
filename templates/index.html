@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  
+  <!-- SEO Meta Tags -->
+  <title>ZenthYT — High-Performance YouTube to MP3 & MP4 Converter | 320kbps Audio & 4K Video</title>
+  <meta name="description" content="Fast, free YouTube to MP3 converter and MP4 downloader. Convert YouTube videos and Shorts to 320kbps studio MP3 audio and 1080p/4K MP4 video with no limits."/>
+  <meta name="keywords" content="ZenthYT, youtube to mp3, youtube to mp4, download youtube video, 320kbps mp3 converter, youtube audio downloader, youtube shorts to mp3, 4k youtube downloader"/>
+  <meta name="author" content="ZenthYT"/>
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"/>
+  <link rel="canonical" href="/"/>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico"/>
+  <link rel="icon" type="image/png" href="/static/img/favicon.png"/>
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="/"/>
+  <meta property="og:title" content="ZenthYT — High-Performance YouTube to MP3 & MP4 Converter"/>
+  <meta property="og:description" content="Convert YouTube videos and Shorts to 320kbps MP3 audio and 1080p/4K MP4 video in seconds."/>
+  <meta property="og:image" content="/static/img/logo.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="theme-color" content="#001621"/>
+
+  <!-- Tailwind CSS & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "theme-orange": "#FF4103",
+            "theme-dark": "#001621",
+            "theme-dark-850": "#001e2d",
+            "theme-dark-800": "#00273a",
+            "theme-dark-950": "#001018",
+            "brand-accent": "#FF4103",
+            "brand-bg": "#001621",
+            "wm-red": "#FF4103",
+            "wm-coral": "#FF4103",
+            "wm-crimson": "#FF4103",
+            "wm-pink": "#FF4103",
+            "wm-mint": "#FF4103",
+            "wm-emerald": "#FF4103",
+            "wm-rind": "#FF4103",
+            "obsidian-950": "#001018",
+            "obsidian-900": "#001621",
+            "obsidian-850": "#001e2d",
+            "obsidian-800": "#00273a",
+            "custom-obsidian": "#001621",
+            "custom-charcoal": "#002233",
+            "custom-card": "#001a27",
+            "custom-crimson": "#FF4103",
+            "custom-crimson-dark": "#e03800",
+            "custom-emerald": "#FF4103",
+            "border-glass": "rgba(255, 65, 3, 0.18)",
+            "border-rind": "rgba(255, 65, 3, 0.3)",
+            "border-coral": "rgba(255, 65, 3, 0.35)",
+          },
+          fontFamily: {
+            sans: ["'JetBrains Mono'", "monospace"],
+            mono: ["'JetBrains Mono'", "monospace"],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Universal JetBrains Mono Typography & Clear Smoothing */
+    *, html, body, input, button, select, textarea {
+      font-family: 'JetBrains Mono', monospace !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined' !important;
+    }
+
+    /* Clean Deep #001621 & #FF4103 Ambient Background */
+    body {
+      background-color: #001621;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      background-image: 
+        radial-gradient(ellipse 70% 45% at 50% -10%, rgba(255, 65, 3, 0.18), transparent 70%),
+        radial-gradient(ellipse 50% 35% at 95% 30%, rgba(255, 65, 3, 0.08), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 5% 85%, rgba(255, 65, 3, 0.06), transparent 70%);
+      background-attachment: fixed;
+    }
+
+    /* Glassmorphic Layering with #FF4103 & #001621 Sheen */
+    .glass-card {
+      background: linear-gradient(135deg, rgba(0, 28, 43, 0.7) 0%, rgba(0, 22, 33, 0.85) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 65, 3, 0.18);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(255, 65, 3, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.7), 0 0 20px -5px rgba(255, 65, 3, 0.2);
+    }
+
+    .glass-hero {
+      background: linear-gradient(145deg, rgba(0, 32, 48, 0.85) 0%, rgba(0, 22, 33, 0.95) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 65, 3, 0.22);
+      position: relative;
+    }
+    .glass-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255, 65, 3, 0.6) 0%, rgba(255, 65, 3, 0.2) 60%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* Tactile Shimmer Sweep Animation */
+    @keyframes shimmer-sweep {
+      0% { transform: translateX(-150%) skewX(-20deg); }
+      100% { transform: translateX(250%) skewX(-20deg); }
+    }
+    .shimmer-active {
+      position: relative;
+      overflow: hidden;
+    }
+    .shimmer-active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+      animation: shimmer-sweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      pointer-events: none;
+    }
+
+    /* Tactile CTA Button with #FF4103 Spring Physics */
+    .btn-watermelon-cta {
+      background: linear-gradient(135deg, #FF4103 0%, #ff5722 50%, #e03800 100%);
+      box-shadow: 0 4px 20px -2px rgba(255, 65, 3, 0.5), 0 1px 0 rgba(255, 255, 255, 0.25) inset;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-watermelon-cta:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 8px 30px -2px rgba(255, 65, 3, 0.8), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+    }
+    .btn-watermelon-cta:active {
+      transform: translateY(1px) scale(0.985);
+      box-shadow: 0 2px 10px -2px rgba(255, 65, 3, 0.4);
+    }
+
+    /* Candy-Stripe Progress Fill */
+    @keyframes candy-stripe {
+      0% { background-position: 0 0; }
+      100% { background-position: 30px 0; }
+    }
+    .progress-watermelon {
+      background-image: repeating-linear-gradient(
+        -45deg,
+        #FF4103,
+        #FF4103 10px,
+        #ff5c26 10px,
+        #ff5c26 20px
+      );
+      background-size: 30px 30px;
+      animation: candy-stripe 1.1s linear infinite;
+    }
+
+    /* Live Audio Waveform Equalizer Bars */
+    @keyframes sound-bar-1 { 0%, 100% { height: 6px; } 50% { height: 22px; } }
+    @keyframes sound-bar-2 { 0%, 100% { height: 18px; } 50% { height: 8px; } }
+    @keyframes sound-bar-3 { 0%, 100% { height: 10px; } 50% { height: 26px; } }
+    @keyframes sound-bar-4 { 0%, 100% { height: 24px; } 50% { height: 12px; } }
+    .bar-1 { animation: sound-bar-1 0.8s ease-in-out infinite; background-color: #FF4103 !important; }
+    .bar-2 { animation: sound-bar-2 0.65s ease-in-out infinite 0.15s; background-color: #FF4103 !important; }
+    .bar-3 { animation: sound-bar-3 0.9s ease-in-out infinite 0.3s; background-color: #FF4103 !important; }
+    .bar-4 { animation: sound-bar-4 0.75s ease-in-out infinite 0.1s; background-color: #FF4103 !important; }
+
+    /* Bulletproof High-Contrast Dark Input */
+    #video-url,
+    .input-dark,
+    input[type='text'],
+    input {
+      background-color: #001621 !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 65, 3, 0.3) !important;
+      caret-color: #FF4103 !important;
+      -webkit-text-fill-color: #ffffff !important;
+      transition: all 0.2s ease;
+    }
+    #video-url::placeholder,
+    .input-dark::placeholder,
+    input[type='text']::placeholder,
+    input::placeholder {
+      color: #94a3b8 !important;
+      opacity: 1 !important;
+      -webkit-text-fill-color: #94a3b8 !important;
+    }
+    #video-url:focus,
+    .input-dark:focus,
+    input[type='text']:focus,
+    input:focus {
+      background-color: #001621 !important;
+      color: #ffffff !important;
+      border-color: #FF4103 !important;
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(255, 65, 3, 0.35) !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: #ffffff !important;
+      -webkit-box-shadow: 0 0 0px 1000px #001621 inset !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .btn-ghost {
+      border: 1px solid rgba(255, 65, 3, 0.25);
+      background-color: rgba(255, 65, 3, 0.06);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-ghost:hover {
+      background-color: rgba(255, 65, 3, 0.15);
+      border-color: #FF4103;
+      transform: translateY(-1px);
+    }
+    .btn-ghost:active {
+      transform: translateY(1px);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #001621; }
+    ::-webkit-scrollbar-thumb { background: #002b40; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #FF4103; }
+  </style>
+
+  <!-- Schema.org JSON-LD Structured Data for Google Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "#webapp",
+        "name": "ZenthYT YouTube Converter",
+        "url": "/",
+        "description": "Free, high-speed converter for downloading YouTube videos into 320kbps MP3 audio and 1080p/4K MP4 video files.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "24680" }
+      },
+      {
+        "@type": "HowTo",
+        "name": "How to Convert YouTube Video to MP3 320kbps on ZenthYT",
+        "description": "Follow three easy steps to convert and download any YouTube video or Short into MP3 audio.",
+        "step": [
+          { "@type": "HowToStep", "name": "Paste YouTube Link", "text": "Paste any YouTube link into the input box." },
+          { "@type": "HowToStep", "name": "Select Quality", "text": "Select your desired audio bitrate (up to 320kbps) or video resolution (up to 4K)." },
+          { "@type": "HowToStep", "name": "Download", "text": "Click Convert & Stream to download instantly." }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is ZenthYT completely free to use?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, ZenthYT is 100% free with unlimited conversions. No sign-up, subscription, or software installation is required." }
+          },
+          {
+            "@type": "Question",
+            "name": "What audio quality does ZenthYT provide?",
+            "acceptedAnswer": { "@type": "Answer", "text": "ZenthYT supports up to studio 320 kbps MP3 conversion with automated ID3 tag and album artwork injection." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col font-mono antialiased text-slate-200">
+
+  <!-- Top System Navigation Bar (Clean Main Frame, No Sidebar) -->
+  <header class="sticky top-0 z-40 bg-[#001621]/90 backdrop-blur-md border-b border-[#00273a]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo with Uploaded Official Zenth Z Icon -->
+      <a href="/" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-lg bg-[#002233] border border-[#003853] flex items-center justify-center p-1 group-hover:border-[#FF4103]/80 transition-colors shadow-md">
+          <img src="/static/img/z_mark_sq.png" alt="Zenth Logo" class="w-full h-full object-contain">
+        </div>
+        <div>
+          <div class="text-xl font-semibold tracking-tight text-white flex items-center gap-1.5">
+            Zenth<span class="text-[#FF4103]">YT</span>
+            <span class="hidden sm:inline-block text-[10px] font-mono uppercase font-medium tracking-wider px-1.5 py-0.5 rounded bg-[#FF4103]/15 text-[#FF4103] border border-[#FF4103]/30">PRO</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Center Status Pill -->
+      <div id="system-status" class="hidden md:flex items-center gap-2 text-xs font-mono text-[#FF4103] bg-[#FF4103]/10 px-3.5 py-1.5 rounded-full border border-[#FF4103]/30">
+        <span class="w-2 h-2 rounded-full bg-[#FF4103] animate-pulse"></span>
+        <span>All Nodes Operational • FFmpeg 7.1 Active • 18ms latency</span>
+      </div>
+
+        <!-- Owner Portfolio Link -->
+        <a href="https://theabhijaychauhan.github.io/portfolio" target="_blank" rel="noopener noreferrer" class="btn-ghost font-mono text-xs text-slate-300 px-3 py-1.5 rounded-md hover:text-white transition-colors hidden sm:flex items-center gap-1.5" title="View Abhijay's Portfolio">
+          <span class="material-symbols-outlined text-sm text-[#FF4103]">person</span>
+          <span>Owner</span>
+        </a>
+
+        <!-- User Profile Card (Abhijay - The Pro Creator) -->
+        <a href="https://theabhijaychauhan.github.io/portfolio" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 pl-3 border-l border-[#002b40] hover:opacity-90 transition-opacity group" title="View Abhijay's Portfolio">
+          <div class="relative">
+            <div class="w-9 h-9 rounded-full bg-[#001e2d] overflow-hidden border border-[#002b40] group-hover:border-[#FF4103]/70 transition-colors">
+              <img alt="Abhijay" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA--39GavZqQLVy6vFtozb2E18uLV1iw5RuvN38qm9Spy2jYhaBmntw2HQctJ4jMR51ZhO8hJOCaN9CY_JDcg0ks7wHxPrAzSllOr6LE4sOvwch16z4qGKYMuoRfGGZ3Q5E3VYlE2qqoM4C3O4tYfWQwd-IY7n-4anFz0_XoTTfUs_S8Zi34_ERAEOWM6kYlpCrvieyYezITdCbAdfmRehDFM-xp7R_QO6vSURradFGoF7stHEsTxKoa_KcNA12_HOaDc3B3mwYPFD7"/>
+            </div>
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#FF4103] rounded-full border-2 border-[#001621]"></span>
+          </div>
+          <div class="hidden sm:block text-left">
+            <div class="text-xs font-medium text-white leading-tight group-hover:text-[#FF4103] transition-colors">Abhijay</div>
+            <div class="text-[10px] font-mono text-[#FF4103] font-medium">The Pro Creator</div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Centered Content Canvas -->
+  <main class="flex-1 max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 w-full space-y-8">
+    
+    <!-- Hero / Headline -->
+    <div class="text-center max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4103]/10 border border-[#FF4103]/30 text-[#FF4103] font-mono text-xs font-medium uppercase tracking-wider mb-4 shadow-sm shadow-[#FF4103]/15">
+        <span class="w-2 h-2 rounded-full bg-[#FF4103] animate-ping"></span>
+        <span>High-Speed Direct Stream Engine</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
+        Convert YouTube to <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF4103] via-[#ff6b3d] to-[#FF4103]">MP3 &amp; MP4</span>
+      </h1>
+      <p class="mt-3 text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto leading-relaxed">
+        Paste any YouTube video, Shorts, or Music URL to transcode and stream directly in <span class="text-slate-200 font-medium">320 kbps studio MP3</span> or <span class="text-slate-200 font-medium">1080p/4K MP4</span>.
+      </p>
+    </div>
+
+    <!-- 1. Quick Convert Hero Card with #FF4103 & #001621 Theme -->
+    <section class="glass-hero rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-black/80">
+      <!-- Ambient Glow Drops -->
+      <div class="absolute -top-16 -right-16 w-80 h-80 bg-[#FF4103]/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -left-16 w-80 h-80 bg-[#FF4103]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#FF4103]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+              Initialize Conversion
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-0.5">
+              Zero waiting queues. Real-time chunked streaming straight to your browser.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs text-slate-400">
+            <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/40 border border-white/5">
+              <span class="w-2 h-2 rounded-full bg-[#FF4103]"></span> 16 Nodes Live
+            </span>
+            <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/40 border border-white/5">
+              <span class="text-[#FF4103] font-medium">FFmpeg 7.1</span>
+            </span>
+          </div>
+        </div>
+
+        <form id="convert-form" class="space-y-4" onsubmit="event.preventDefault(); handleConvertAndStream();">
+          <div class="flex flex-col lg:flex-row gap-3 items-center">
+            
+            <!-- URL Input Field -->
+            <div class="relative w-full flex-1">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">link</span>
+              <input 
+                type="text" 
+                id="video-url" 
+                name="url"
+                placeholder="Paste YouTube link (e.g. https://www.youtube.com/watch?v=... or Shorts)" 
+                class="w-full rounded-xl py-3.5 pl-12 pr-28 font-mono text-sm focus:border-[#FF4103] transition-all border border-[#002b40] shadow-inner"
+                style="background-color: #001621 !important; color: #ffffff !important; border: 1px solid rgba(255,65,3,0.3) !important;"
+                required
+                autocomplete="off"
+                spellcheck="false"
+              >
+              <div class="absolute inset-y-0 right-2 flex items-center">
+                <button 
+                  type="button" 
+                  id="paste-btn" 
+                  onclick="handlePasteClipboard()" 
+                  class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[#FF4103]/15 text-slate-200 hover:text-white font-mono text-xs font-medium transition-all flex items-center gap-1.5 border border-white/10 hover:border-[#FF4103]/50 shadow-sm cursor-pointer active:scale-95"
+                  title="Paste from clipboard"
+                >
+                  <span class="material-symbols-outlined text-sm text-[#FF4103]">content_paste</span>
+                  <span>Paste</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Format Toggles with Direct Quality Selectors -->
+            <div class="flex flex-wrap items-center gap-2 bg-[#001018]/90 p-1.5 rounded-xl border border-white/10 w-full lg:w-auto justify-center">
+              <button 
+                type="button" 
+                id="tab-mp3" 
+                onclick="switchFormatTab('mp3')" 
+                class="px-3.5 py-2 rounded-lg font-mono text-xs font-medium transition-all bg-[#00273a] text-white border border-[#FF4103]/60 shadow-sm flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>MP3</span>
+                <span id="tab-mp3-badge" class="text-[10px] text-[#FF4103] font-medium">320k</span>
+              </button>
+              <div class="w-px h-6 bg-white/10"></div>
+              <button 
+                type="button" 
+                id="tab-mp4" 
+                onclick="switchFormatTab('mp4')" 
+                class="px-3.5 py-2 rounded-lg font-mono text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>MP4</span>
+                <span id="tab-mp4-badge" class="text-[10px] text-slate-400 font-medium">1080p</span>
+              </button>
+
+              <!-- Quick MP3 Bitrate Dropdown -->
+              <div id="top-mp3-select-wrapper" class="relative">
+                <select 
+                  id="top-bitrate-select" 
+                  onchange="selectAudioBitrate(this.value)" 
+                  class="bg-[#001e2d] text-slate-200 font-mono text-xs font-medium border border-white/10 rounded-lg px-2.5 py-1.5 focus:border-[#FF4103] focus:outline-none cursor-pointer hover:border-[#FF4103]/40 transition-colors"
+                  title="Choose MP3 Bitrate"
+                >
+                  <option value="320k" selected>320 kbps (HQ)</option>
+                  <option value="256k">256 kbps</option>
+                  <option value="192k">192 kbps</option>
+                  <option value="128k">128 kbps</option>
+                  <option value="64k">64 kbps</option>
+                </select>
+              </div>
+
+              <!-- Quick MP4 Resolution Dropdown -->
+              <div id="top-mp4-select-wrapper" class="relative hidden">
+                <select 
+                  id="top-resolution-select" 
+                  onchange="selectVideoResolution(this.value)" 
+                  class="bg-[#001e2d] text-slate-200 font-mono text-xs font-medium border border-white/10 rounded-lg px-2.5 py-1.5 focus:border-[#FF4103] focus:outline-none cursor-pointer hover:border-[#FF4103]/40 transition-colors"
+                  title="Choose Video Resolution"
+                >
+                  <option value="1080p" selected>1080p (Full HD)</option>
+                  <option value="720p">720p (HD)</option>
+                  <option value="480p">480p (SD)</option>
+                  <option value="360p">360p (Data Saver)</option>
+                  <option value="4K">4K (Ultra HD)</option>
+                  <option value="2K">2K (Quad HD)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit Button (Convert & Stream) -->
+            <button 
+              type="submit" 
+              id="fetch-btn" 
+              class="btn-watermelon-cta shimmer-active w-full lg:w-auto px-7 py-3.5 rounded-xl font-medium text-sm text-white transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer active:scale-95 shadow-lg shadow-[#FF4103]/30 group"
+            >
+              <span id="btn-text">Convert &amp; Stream</span>
+              <span id="btn-icon" class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              <!-- Spinner -->
+              <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+
+          </div>
+        </form>
+
+        <!-- Dynamic Feedback / Hint Tooltip -->
+        <div id="paste-hint" class="hidden text-xs text-amber-400 font-mono flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">info</span>
+          <span id="paste-hint-text">Clipboard permission blocked by browser — press Ctrl+V to paste your link!</span>
+        </div>
+
+        <!-- Error Box -->
+        <div id="error-box" class="p-4 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs sm:text-sm hidden flex items-start gap-3">
+          <span class="material-symbols-outlined text-red-400 text-lg shrink-0">error</span>
+          <div id="error-message">An error occurred while fetching video details.</div>
+        </div>
+
+        <!-- Dynamic Video Preview & Bitrate Options Card -->
+        <div id="result-box" class="pt-6 border-t border-white/10 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            
+            <!-- Video Thumbnail & Meta -->
+            <div class="md:col-span-5 space-y-3">
+              <div class="relative rounded-xl overflow-hidden aspect-video bg-black border border-white/10 shadow-md group">
+                <img id="video-thumb" src="" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                <span id="video-duration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 font-mono text-white text-[11px] font-medium">00:00</span>
+              </div>
+              <div>
+                <h3 id="video-title" class="text-sm sm:text-base font-semibold text-white line-clamp-2 leading-snug">Video Title</h3>
+                <div class="flex items-center gap-2 mt-1.5 text-xs text-slate-400 font-mono">
+                  <span id="video-channel" class="text-[#FF4103] font-medium truncate">Channel</span>
+                  <span>•</span>
+                  <span id="video-views">0 views</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quality List & Download Trigger -->
+            <div class="md:col-span-7 bg-[#001621]/90 p-4 sm:p-5 rounded-xl border border-white/10 space-y-4">
+              <div id="quality-container" class="space-y-2">
+                <label class="block text-[11px] font-mono uppercase font-medium tracking-wider text-slate-400">Select Output Quality</label>
+                <div id="audio-quality-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <!-- Injected via JS -->
+                </div>
+                <div id="video-quality-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 hidden">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <!-- Download Button -->
+              <div class="pt-2">
+                <button 
+                  type="button" 
+                  id="start-download-btn" 
+                  onclick="triggerDownload()" 
+                  class="btn-watermelon-cta shimmer-active w-full py-3.5 rounded-xl text-white font-medium text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-lg shadow-[#FF4103]/30"
+                >
+                  <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">download</span>
+                  <span id="download-btn-text">Download MP3 (320 kbps)</span>
+                </button>
+
+                <!-- Enhanced Real-Time Progress Bar with #FF4103 Candy-Stripe -->
+                <div id="download-progress-bar" class="mt-3.5 hidden p-4 rounded-xl bg-[#001018]/90 border border-white/10 space-y-3 shadow-2xl">
+                  <div class="flex items-center justify-between text-xs font-mono">
+                    <span id="download-status-text" class="flex items-center gap-2 text-[#FF4103] font-medium">
+                      <span class="w-2.5 h-2.5 rounded-full bg-[#FF4103] animate-ping"></span>
+                      <span id="download-state-label">🚀 Transcoding &amp; streaming...</span>
+                    </span>
+                    <div class="flex items-center gap-2">
+                      <span id="download-percent-badge" class="font-semibold text-[#FF4103] font-mono text-xs">0%</span>
+                      <span id="download-status-badge" class="text-[10px] uppercase px-2 py-0.5 rounded bg-[#FF4103]/20 text-[#FF4103] font-medium border border-[#FF4103]/40">Transcoding</span>
+                    </div>
+                  </div>
+
+                  <!-- Real Progress Bar Track with Candy-Stripe Fill -->
+                  <div class="w-full h-2.5 rounded-full bg-[#001621] overflow-hidden relative border border-white/10">
+                    <div 
+                      id="progress-fill" 
+                      class="h-full progress-watermelon rounded-full transition-all duration-150 shadow-[0_0_14px_#FF4103]" 
+                      style="width: 0%;"
+                    ></div>
+                  </div>
+
+                  <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                    <span id="download-bytes-counter" class="text-slate-200 font-normal">0.0 MB / ~ MB</span>
+                    <span class="text-slate-400 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-xs text-[#FF4103]">speed</span>
+                      <span id="download-speed-text" class="text-[#FF4103] font-medium">Initializing stream...</span>
+                    </span>
+                  </div>
+
+                  <div id="download-hint-text" class="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 pt-1.5 border-t border-white/5">
+                    <span class="material-symbols-outlined text-sm text-[#FF4103]">info</span>
+                    <span>Download stream active. Transcoding and delivering chunks directly to your browser.</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. Live Performance Metrics & Speed Telemetry Gauge -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Metric 1: Stream Speed Telemetry Gauge -->
+      <div class="glass-card rounded-xl p-5 border-l-2 border-l-[#FF4103] relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-3">
+          <div class="p-2 bg-[#FF4103]/10 rounded-lg border border-[#FF4103]/20 text-[#FF4103]">
+            <span class="material-symbols-outlined text-xl">speed</span>
+          </div>
+          <span class="font-mono text-[#FF4103] text-xs flex items-center gap-1 bg-[#FF4103]/15 px-2 py-0.5 rounded border border-[#FF4103]/30 font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#FF4103] animate-ping"></span> LIVE
+          </span>
+        </div>
+        <div class="text-xs font-mono uppercase text-slate-400">Throughput Stream</div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="text-2xl font-semibold text-white font-mono tracking-tight">48.6</span>
+          <span class="font-mono text-xs font-medium text-[#FF4103]">MB/s</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-slate-400">
+          <span>Concurrency</span>
+          <span class="text-white font-medium">16x Multi-Chunk</span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Total Conversions -->
+      <div class="glass-card rounded-xl p-5 border-l-2 border-l-[#FF4103] relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-3">
+          <div class="p-2 bg-[#FF4103]/10 rounded-lg border border-[#FF4103]/20 text-[#FF4103]">
+            <span class="material-symbols-outlined text-xl">sync_saved_locally</span>
+          </div>
+          <span class="font-mono text-[#FF4103] text-xs flex items-center gap-1 bg-[#FF4103]/10 px-2 py-0.5 rounded border border-[#FF4103]/20 font-medium">
+            <span class="material-symbols-outlined text-xs">trending_up</span> +28.4%
+          </span>
+        </div>
+        <div class="text-xs font-mono uppercase text-slate-400">Total Transcoded</div>
+        <div class="text-2xl font-semibold text-white mt-1">1,482 <span class="text-xs font-normal text-slate-400">jobs</span></div>
+        <div class="mt-3 flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-slate-400">
+          <span>Success Rate</span>
+          <span class="text-[#FF4103] font-medium">99.94%</span>
+        </div>
+      </div>
+
+      <!-- Metric 3: Audio Extractions -->
+      <div class="glass-card rounded-xl p-5 border-l-2 border-l-[#FF4103] relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-3">
+          <div class="p-2 bg-[#FF4103]/10 rounded-lg border border-[#FF4103]/20 text-[#FF4103]">
+            <span class="material-symbols-outlined text-xl">graphic_eq</span>
+          </div>
+          <span class="font-mono text-slate-300 text-xs px-2 py-0.5 rounded bg-white/5 border border-white/10 font-medium">320k Studio</span>
+        </div>
+        <div class="text-xs font-mono uppercase text-slate-400">Audio Extractions</div>
+        <div class="text-2xl font-semibold text-white mt-1">912 <span class="text-xs font-normal text-[#FF4103] font-medium">HQ Tracks</span></div>
+        <div class="mt-3 flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-slate-400">
+          <span>Bandwidth Saved</span>
+          <span class="text-white font-medium">34.2 GB</span>
+        </div>
+      </div>
+
+      <!-- Metric 4: Distributed Nodes -->
+      <div class="glass-card rounded-xl p-5 border-l-2 border-l-[#FF4103] relative overflow-hidden group">
+        <div class="flex justify-between items-start mb-3">
+          <div class="p-2 bg-white/5 rounded-lg border border-white/10 text-white">
+            <span class="material-symbols-outlined text-xl">memory</span>
+          </div>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#FF4103] animate-pulse mt-1"></span>
+        </div>
+        <div class="text-xs font-mono uppercase text-slate-400">Active Node Farm</div>
+        <div class="text-2xl font-semibold text-white mt-1">16 / 16 <span class="text-xs font-normal text-[#FF4103] font-mono font-medium">Optimal</span></div>
+        <div class="mt-3 flex items-center justify-between pt-2 border-t border-white/5 text-[10px] font-mono text-slate-400">
+          <span>Packet Loss</span>
+          <span class="text-[#FF4103] font-medium">0.00%</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 3. Dynamic Live Queue (Active Tasks Only with #FF4103 Styling) -->
+    <section class="glass-card rounded-2xl p-6 sm:p-7 border border-white/10 space-y-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF4103] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#FF4103]"></span>
+          </span>
+          <h3 class="text-sm sm:text-base font-semibold text-white font-mono">Live Transcode Queue</h3>
+          <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#FF4103]/15 text-[#FF4103] font-medium border border-[#FF4103]/30">Active Tasks</span>
+        </div>
+        <span id="queue-count" class="text-xs font-mono text-slate-400">0 Active</span>
+      </div>
+
+      <!-- Queue Container Populated Dynamically via JS -->
+      <div id="queue-container" class="space-y-3">
+        <!-- Empty State Default -->
+        <div id="queue-empty-state" class="py-8 text-center text-slate-500 space-y-2">
+          <span class="material-symbols-outlined text-4xl text-slate-600">hourglass_empty</span>
+          <div class="text-sm font-mono text-slate-400">Live Queue is idle</div>
+          <div class="text-xs text-slate-600">Paste any YouTube link above and click Convert &amp; Stream to start a download task!</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. FAQ Accordion Section -->
+    <section id="faq" class="space-y-4 pt-4">
+      <div class="text-center mb-6">
+        <h2 class="text-xl sm:text-2xl font-semibold text-white">Frequently Asked Questions</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1 font-mono">Answers to common converter and audio bitrate questions.</p>
+      </div>
+
+      <div class="space-y-3">
+        <details class="group p-4 rounded-xl glass-card transition-all">
+          <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-white text-sm">
+            <span>Is ZenthYT completely free with no limits?</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm group-open:rotate-180 transition-transform">expand_more</span>
+          </summary>
+          <p class="text-slate-400 text-xs sm:text-sm mt-2.5 leading-relaxed font-mono">
+            Yes! ZenthYT is 100% free with unlimited conversions. No account signup, registration, or software installation is required.
+          </p>
+        </details>
+
+        <details class="group p-4 rounded-xl glass-card transition-all">
+          <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-white text-sm">
+            <span>Does it embed album art and artist tags in the MP3?</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm group-open:rotate-180 transition-transform">expand_more</span>
+          </summary>
+          <p class="text-slate-400 text-xs sm:text-sm mt-2.5 leading-relaxed font-mono">
+            Yes. Every downloaded MP3 file has full ID3 tags automatically injected: song title, artist/channel name, and high-definition thumbnail embedded as the cover art for Spotify, Apple Music, and mobile players.
+          </p>
+        </details>
+
+        <details class="group p-4 rounded-xl glass-card transition-all">
+          <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-white text-sm">
+            <span>Does ZenthYT store my downloaded files on disk?</span>
+            <span class="material-symbols-outlined text-slate-400 text-sm group-open:rotate-180 transition-transform">expand_more</span>
+          </summary>
+          <p class="text-slate-400 text-xs sm:text-sm mt-2.5 leading-relaxed font-mono">
+            No. Conversion files live temporarily in the operating system's ephemeral memory and are immediately deleted the instant your browser finishes receiving the stream.
+          </p>
+        </details>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clean Minimalist Footer -->
+  <footer class="border-t border-[#00273a] bg-[#001621] py-8 text-center text-xs text-slate-500 font-mono mt-12">
+    <div class="max-w-6xl mx-auto px-4 space-y-3">
+      <div class="flex flex-wrap items-center justify-center gap-6 text-slate-400">
+        <a href="/" class="hover:text-white transition-colors">Converter</a>
+        <a href="https://theabhijaychauhan.github.io/portfolio" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-xs text-[#FF4103]">person</span>
+          <span>Owner</span>
+        </a>
+        <a href="/api/docs" target="_blank" class="hover:text-white transition-colors">API Docs</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </div>
+      <p>© 2026 ZenthYT. High-Speed Distributed Media Extraction Engine. Personal &amp; Educational use only.</p>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

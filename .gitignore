@@ -1,0 +1,32 @@
+﻿# Large binaries (Linux Docker installs ffmpeg directly)
+bin/
+*.exe
+
+# Credentials and sensitive tokens
+cookies.txt
+.env
+*.pem
+
+# Dependencies
+node_modules/
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*.class
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Temporary processing files
+temp/
+downloads/
+*.tmp
