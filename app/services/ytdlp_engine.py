@@ -15,6 +15,7 @@ from app.config import (
     USER_AGENTS,
     PROXY_URL,
     COOKIES_FILE,
+    resolve_cookies_file,
     DOWNLOADS_TEMP_DIR,
     MAX_VIDEO_DURATION_SECONDS,
 )
@@ -84,8 +85,8 @@ def extract_video_id(url: str) -> Optional[str]:
     return None
 
 def get_base_ydl_opts(custom_clients: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Build fast yt-dlp options with cookies and ffmpeg path."""
-    cookie_path = COOKIES_FILE if (COOKIES_FILE and os.path.exists(COOKIES_FILE)) else str(BASE_DIR / "cookies.txt")
+    """Build fast yt-dlp options with dynamic cookies and ffmpeg path."""
+    cookie_path = resolve_cookies_file()
 
     opts: Dict[str, Any] = {
         "quiet": True,
