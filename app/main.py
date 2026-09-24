@@ -52,8 +52,10 @@ app.include_router(download_router)
 app.include_router(health_router)
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    """Render home page with complete SEO metadata and schema tags."""
+@app.get("/watch", response_class=HTMLResponse)
+@app.get("/shorts/{video_id}", response_class=HTMLResponse)
+async def home(request: Request, v: str = None, video_id: str = None):
+    """Render home page with complete SEO metadata, schema tags, and URL prefix hack support."""
     return templates.TemplateResponse(
         request=request,
         name="index.html",

@@ -889,7 +889,91 @@ function hideError() {
 }
 
 // ==========================================
-// 8. Health Check & Initialization
+// 8. Superpower Features: Beam to Phone (QR), URL Prefix Hack & Wasm Engine
+// ==========================================
+
+let clientWasmEngineActive = true;
+
+function toggleEngineMode() {
+  clientWasmEngineActive = !clientWasmEngineActive;
+  const label = document.getElementById("engine-mode-label");
+  if (label) {
+    label.textContent = clientWasmEngineActive
+      ? "Auto (WASM Client + Cloud Fallback)"
+      : "Cloud Server Direct (FFmpeg 7.1)";
+  }
+}
+
+// Feature 3: Beam to Phone QR Code Modal
+function openQrModal() {
+  const modal = document.getElementById("qr-modal");
+  const qrImg = document.getElementById("qr-image");
+  const qrUrlText = document.getElementById("qr-url-text");
+  if (!modal || !qrImg) return;
+
+  const targetUrl = (urlInput && urlInput.value) ? urlInput.value.trim() : (currentVideoData ? currentVideoData.url : "");
+  const vid = extractVideoId(targetUrl);
+  const currentOrigin = window.location.origin;
+  const mobileLink = vid 
+    ? `${currentOrigin}/watch?v=${vid}&format=${currentFormat}&q=${currentFormat === 'mp3' ? selectedAudioBitrate : selectedVideoResolution}`
+    : `${currentOrigin}/`;
+
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileLink)}&color=FF4103&bgcolor=001621&format=svg`;
+  if (qrUrlText) qrUrlText.textContent = mobileLink;
+  modal.classList.remove("hidden");
+}
+
+function closeQrModal() {
+  const modal = document.getElementById("qr-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function copyQrLink() {
+  const qrUrlText = document.getElementById("qr-url-text");
+  if (qrUrlText && qrUrlText.textContent) {
+    navigator.clipboard.writeText(qrUrlText.textContent).then(() => {
+      const copyBtn = document.getElementById("qr-copy-btn");
+      if (copyBtn) {
+        copyBtn.innerHTML = `<span class="material-symbols-outlined text-sm text-emerald-400">check</span><span>Copied!</span>`;
+        setTimeout(() => {
+          copyBtn.innerHTML = `<span class="material-symbols-outlined text-sm text-[#FF4103]">content_copy</span><span>Copy Link</span>`;
+        }, 2000);
+      }
+    });
+  }
+}
+
+// Feature 6: URL Prefix Growth Hack (Auto-Load & Convert)
+function handleUrlPrefixAutoLoad() {
+  if (typeof window === "undefined" || !window.location) return;
+  const params = new URLSearchParams(window.location.search);
+  let targetUrl = params.get("url") || params.get("v") || params.get("q");
+
+  const path = window.location.pathname;
+  if (!targetUrl && path.startsWith("/shorts/")) {
+    const shortId = path.split("/shorts/")[1].split("/")[0].split("?")[0];
+    if (shortId) targetUrl = `https://www.youtube.com/shorts/${shortId}`;
+  }
+
+  if (targetUrl) {
+    if (targetUrl.length === 11 && !targetUrl.includes("/")) {
+      targetUrl = `https://www.youtube.com/watch?v=${targetUrl}`;
+    }
+    if (urlInput) {
+      urlInput.value = targetUrl;
+      const fmtParam = params.get("format");
+      if (fmtParam && (fmtParam === "mp3" || fmtParam === "mp4")) {
+        switchFormatTab(fmtParam);
+      }
+      setTimeout(() => {
+        handleConvertAndStream();
+      }, 300);
+    }
+  }
+}
+
+// ==========================================
+// 9. Health Check & Initialization
 // ==========================================
 
 async function checkHealth() {
@@ -914,4 +998,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderQueue();
   checkHealth();
+  handleUrlPrefixAutoLoad();
 });
