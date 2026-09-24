@@ -11,6 +11,7 @@ import yt_dlp
 from app.config import (
     BASE_DIR,
     PLAYER_CLIENTS,
+    YOUTUBE_PO_TOKEN,
     USER_AGENTS,
     PROXY_URL,
     COOKIES_FILE,
@@ -82,17 +83,28 @@ def extract_video_id(url: str) -> Optional[str]:
             return match.group(1)
     return None
 
-def get_base_ydl_opts() -> Dict[str, Any]:
-    """Build yt-dlp options with cookies, challenge solvers, and ffmpeg path."""
+def get_base_ydl_opts(custom_clients: Optional[List[str]] = None) -> Dict[str, Any]:
+    """Build yt-dlp options with cookies, player client rotation, PO token, and ffmpeg path."""
     cookie_path = COOKIES_FILE if (COOKIES_FILE and os.path.exists(COOKIES_FILE)) else str(BASE_DIR / "cookies.txt")
-    
+    clients = custom_clients or PLAYER_CLIENTS
+
+    extractor_args: Dict[str, Any] = {
+        "youtube": {
+            "player_client": clients,
+            "player_skip": ["webpage", "configs"],
+        }
+    }
+    if YOUTUBE_PO_TOKEN:
+        extractor_args["youtube"]["po_token"] = [YOUTUBE_PO_TOKEN]
+
     opts: Dict[str, Any] = {
         "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
         "ffmpeg_location": FFMPEG_EXE,
         "socket_timeout": 30,
-        "retries": 3,
+        "retries": 5,
+        "extractor_args": extractor_args,
         "js_runtimes": {"node": {}},
         "remote_components": ["ejs:github"],
         "http_headers": {
@@ -101,12 +113,15 @@ def get_base_ydl_opts() -> Dict[str, Any]:
         },
     }
 
-    if os.path.exists(cookie_path):
+    if cookie_path and os.path.exists(cookie_path):
         opts["cookiefile"] = cookie_path
         logger.info(f"Using cookiefile at {cookie_path}")
+    else:
+        logger.warning("No cookiefile detected. Running in unauthenticated mode.")
 
     if PROXY_URL:
         opts["proxy"] = PROXY_URL
+        logger.info(f"Using proxy: {PROXY_URL}")
 
     return opts
 
@@ -129,12 +144,12 @@ def _fetch_via_oembed(url: str, video_id: str) -> Dict[str, Any]:
     raise RuntimeError(f"oEmbed fetch failed with status code {resp.status_code}")
 
 def _extract_info_with_fallback(url: str) -> Dict[str, Any]:
-    """Attempt extraction using yt-dlp with cookies & node challenge solver, with oEmbed fallback."""
+    """Attempt extraction using yt-dlp with client rotation cascade (TV, iOS, Android, Web), and oEmbed fallback."""
     norm_url = normalize_youtube_url(url)
     clean_id = extract_video_id(url)
     last_exception = None
 
-    # 1. First attempt: yt-dlp with configured base options
+    # 1. Primary attempt: Base client rotation (tv, ios, android, mweb, web)
     try:
         ydl_opts = get_base_ydl_opts()
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -142,27 +157,49 @@ def _extract_info_with_fallback(url: str) -> Dict[str, Any]:
             if info:
                 return info
     except Exception as e:
-        logger.warning(f"yt-dlp extraction error: {e}")
+        logger.warning(f"yt-dlp primary extraction error: {e}")
         last_exception = e
 
-    # 2. Second attempt: try without custom flags
+    # 2. Secondary attempt: TV & iOS client bypass (Smart TV & iOS APIs frequently bypass Web BotGuard)
     try:
-        with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "ffmpeg_location": FFMPEG_EXE}) as ydl:
+        logger.info("Retrying extraction with TV & iOS client bypass...")
+        ydl_opts = get_base_ydl_opts(custom_clients=["tv", "ios"])
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(norm_url, download=False)
             if info:
                 return info
     except Exception as e:
-        logger.warning(f"Second yt-dlp extraction error: {e}")
+        logger.warning(f"yt-dlp TV/iOS fallback error: {e}")
         last_exception = e
 
-    # 3. Third attempt: YouTube oEmbed fallback for metadata
+    # 3. Tertiary attempt: Android mobile API
+    try:
+        logger.info("Retrying extraction with Android mobile client...")
+        ydl_opts = get_base_ydl_opts(custom_clients=["android"])
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(norm_url, download=False)
+            if info:
+                return info
+    except Exception as e:
+        logger.warning(f"yt-dlp Android-only fallback error: {e}")
+        last_exception = e
+
+    # 4. Quaternary attempt: YouTube oEmbed fallback for metadata preview
     if clean_id:
         try:
             return _fetch_via_oembed(norm_url, clean_id)
         except Exception as oembed_err:
             logger.error(f"oEmbed fallback error: {oembed_err}")
 
-    raise RuntimeError(f"Unable to fetch video information from YouTube: {str(last_exception or 'Video not available')}")
+    err_msg = str(last_exception or "Video not available")
+    if "Sign in to confirm you’re not a bot" in err_msg or "Sign in to confirm you're not a bot" in err_msg:
+        raise RuntimeError(
+            "YouTube BotGuard challenge triggered on this cloud server IP. "
+            "To fix: Set the 'YOUTUBE_COOKIES_TEXT' environment variable in your Render dashboard with your exported cookies.txt, "
+            "or configure a rotating residential proxy."
+        )
+
+    raise RuntimeError(f"Unable to fetch video information from YouTube: {err_msg}")
 
 async def fetch_video_info(url: str) -> VideoInfoResponse:
     """Fetch video metadata and return formatted response."""
@@ -265,6 +302,48 @@ async def process_and_download(
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, _sync_download, url, format_type, quality)
 
+def _download_media_with_fallback(base_opts: Dict[str, Any], url: str) -> None:
+    """Download media with multi-client fallback for cloud datacenter environments."""
+    try:
+        with yt_dlp.YoutubeDL(base_opts) as ydl:
+            ydl.download([url])
+            return
+    except Exception as e:
+        err_msg = str(e)
+        if "Sign in to confirm you’re not a bot" in err_msg or "Sign in to confirm you're not a bot" in err_msg:
+            logger.warning("Bot challenge during download. Retrying with TV/iOS client...")
+            retry_opts = dict(base_opts)
+            retry_opts["extractor_args"] = {
+                "youtube": {
+                    "player_client": ["tv", "ios"],
+                    "player_skip": ["webpage", "configs"],
+                }
+            }
+            try:
+                with yt_dlp.YoutubeDL(retry_opts) as ydl:
+                    ydl.download([url])
+                    return
+            except Exception as e2:
+                logger.warning(f"TV/iOS retry failed: {e2}. Retrying with Android client...")
+                retry_opts_android = dict(base_opts)
+                retry_opts_android["extractor_args"] = {
+                    "youtube": {
+                        "player_client": ["android"],
+                        "player_skip": ["webpage", "configs"],
+                    }
+                }
+                try:
+                    with yt_dlp.YoutubeDL(retry_opts_android) as ydl:
+                        ydl.download([url])
+                        return
+                except Exception:
+                    raise RuntimeError(
+                        "YouTube BotGuard blocked this datacenter IP. "
+                        "To fix: Paste your cookies.txt into Render as the 'YOUTUBE_COOKIES_TEXT' environment variable, "
+                        "or configure a rotating residential proxy."
+                    )
+        raise
+
 def _sync_download(
     url: str,
     format_type: str,
@@ -306,8 +385,7 @@ def _sync_download(
             "keepvideo": False,
         })
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([norm_url])
+        _download_media_with_fallback(ydl_opts, norm_url)
 
         generated_files = list(out_dir.glob("*.mp3"))
         if not generated_files:
@@ -358,8 +436,7 @@ def _sync_download(
             "prefer_ffmpeg": True,
         })
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([norm_url])
+        _download_media_with_fallback(ydl_opts, norm_url)
 
         generated_files = list(out_dir.glob("*.mp4"))
         if not generated_files:
