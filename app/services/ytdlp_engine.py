@@ -84,17 +84,8 @@ def extract_video_id(url: str) -> Optional[str]:
     return None
 
 def get_base_ydl_opts(custom_clients: Optional[List[str]] = None) -> Dict[str, Any]:
-    """Build fast yt-dlp options with cookies, player client rotation, PO token, and ffmpeg path."""
+    """Build fast yt-dlp options with cookies and ffmpeg path."""
     cookie_path = COOKIES_FILE if (COOKIES_FILE and os.path.exists(COOKIES_FILE)) else str(BASE_DIR / "cookies.txt")
-    clients = custom_clients or PLAYER_CLIENTS
-
-    extractor_args: Dict[str, Any] = {
-        "youtube": {
-            "player_client": clients,
-        }
-    }
-    if YOUTUBE_PO_TOKEN:
-        extractor_args["youtube"]["po_token"] = [YOUTUBE_PO_TOKEN]
 
     opts: Dict[str, Any] = {
         "quiet": True,
@@ -103,13 +94,20 @@ def get_base_ydl_opts(custom_clients: Optional[List[str]] = None) -> Dict[str, A
         "ffmpeg_location": FFMPEG_EXE,
         "socket_timeout": 12,
         "retries": 2,
-        "extractor_args": extractor_args,
         "js_runtimes": {"node": {}},
         "http_headers": {
             "User-Agent": USER_AGENTS[0],
             "Accept-Language": "en-US,en;q=0.9",
         },
     }
+
+    if custom_clients or YOUTUBE_PO_TOKEN:
+        extractor_args: Dict[str, Any] = {"youtube": {}}
+        if custom_clients:
+            extractor_args["youtube"]["player_client"] = custom_clients
+        if YOUTUBE_PO_TOKEN:
+            extractor_args["youtube"]["po_token"] = [YOUTUBE_PO_TOKEN]
+        opts["extractor_args"] = extractor_args
 
     if cookie_path and os.path.exists(cookie_path):
         opts["cookiefile"] = cookie_path
@@ -287,33 +285,33 @@ async def process_and_download(
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, _sync_download, url, format_type, quality)
 
-def _download_media_with_fallback(base_opts: Dict[str, Any], url: str) -> None:
-    """Download media with fast fallback for cloud datacenter environments."""
+def _download_media_with_fallback(base_opts: Dict[str, Any], url: str, is_audio: bool = True) -> None:
+    """Download media with progressive stream fallback if YouTube blocks datacenter IP."""
     try:
         with yt_dlp.YoutubeDL(base_opts) as ydl:
             ydl.download([url])
             return
     except Exception as e:
         err_msg = str(e)
-        if "Sign in to confirm" in err_msg or "Failed to extract" in err_msg:
-            logger.warning("Bot challenge during download. Retrying with Android client...")
-            retry_opts = dict(base_opts)
-            retry_opts["extractor_args"] = {
-                "youtube": {
-                    "player_client": ["android", "web"],
-                }
+        logger.warning(f"Initial download error: {err_msg}. Retrying with universal fallback stream...")
+        retry_opts = dict(base_opts)
+        if is_audio:
+            retry_opts["format"] = "bestaudio/best[height<=?720]/18/best"
+        else:
+            retry_opts["format"] = "best[height<=?1080]/best[height<=?720]/18/best"
+
+        retry_opts["extractor_args"] = {
+            "youtube": {
+                "player_client": ["android", "web"],
             }
-            try:
-                with yt_dlp.YoutubeDL(retry_opts) as ydl:
-                    ydl.download([url])
-                    return
-            except Exception as e2:
-                logger.error(f"Fallback download error: {e2}")
-                raise RuntimeError(
-                    "YouTube BotGuard blocked this datacenter IP during download. "
-                    "To fix: Paste your cookies.txt into Render as the 'YOUTUBE_COOKIES_TEXT' environment variable."
-                )
-        raise
+        }
+        try:
+            with yt_dlp.YoutubeDL(retry_opts) as ydl:
+                ydl.download([url])
+                return
+        except Exception as e2:
+            logger.error(f"Fallback download error: {e2}")
+            raise RuntimeError(f"YouTube media extraction failed: {str(e2)}")
 
 def _sync_download(
     url: str,
@@ -356,7 +354,7 @@ def _sync_download(
             "keepvideo": False,
         })
 
-        _download_media_with_fallback(ydl_opts, norm_url)
+        _download_media_with_fallback(ydl_opts, norm_url, is_audio=True)
 
         generated_files = list(out_dir.glob("*.mp3"))
         if not generated_files:
@@ -407,7 +405,7 @@ def _sync_download(
             "prefer_ffmpeg": True,
         })
 
-        _download_media_with_fallback(ydl_opts, norm_url)
+        _download_media_with_fallback(ydl_opts, norm_url, is_audio=False)
 
         generated_files = list(out_dir.glob("*.mp4"))
         if not generated_files:

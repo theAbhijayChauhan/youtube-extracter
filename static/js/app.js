@@ -905,21 +905,65 @@ function toggleEngineMode() {
 }
 
 // Feature 3: Beam to Phone QR Code Modal
-function openQrModal() {
-  const modal = document.getElementById("qr-modal");
+let currentQrMode = "direct"; // 'direct' or 'page'
+
+function setQrMode(mode) {
+  currentQrMode = mode;
+  const tabDirect = document.getElementById("qr-tab-direct");
+  const tabPage = document.getElementById("qr-tab-page");
+  const descText = document.getElementById("qr-desc-text");
+
+  if (mode === "direct") {
+    if (tabDirect) tabDirect.className = "flex-1 py-1.5 rounded-md bg-[#00273a] text-white font-medium border border-[#FF4103]/40 transition-all cursor-pointer";
+    if (tabPage) tabPage.className = "flex-1 py-1.5 rounded-md text-slate-400 hover:text-white transition-all cursor-pointer";
+    if (descText) descText.textContent = "Point your phone camera to download the converted audio/video directly to your device.";
+  } else {
+    if (tabPage) tabPage.className = "flex-1 py-1.5 rounded-md bg-[#00273a] text-white font-medium border border-[#FF4103]/40 transition-all cursor-pointer";
+    if (tabDirect) tabDirect.className = "flex-1 py-1.5 rounded-md text-slate-400 hover:text-white transition-all cursor-pointer";
+    if (descText) descText.textContent = "Point your phone camera to open the mobile web converter with this video loaded.";
+  }
+  updateQrContent();
+}
+
+function updateQrContent() {
   const qrImg = document.getElementById("qr-image");
   const qrUrlText = document.getElementById("qr-url-text");
-  if (!modal || !qrImg) return;
+  const notice = document.getElementById("qr-localhost-notice");
+  if (!qrImg) return;
 
-  const targetUrl = (urlInput && urlInput.value) ? urlInput.value.trim() : (currentVideoData ? currentVideoData.url : "");
-  const vid = extractVideoId(targetUrl);
+  const targetUrl = (urlInput && urlInput.value) ? urlInput.value.trim() : (currentVideoData ? currentVideoData.url : "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+  const vid = extractVideoId(targetUrl) || "dQw4w9WgXcQ";
   const currentOrigin = window.location.origin;
-  const mobileLink = vid 
-    ? `${currentOrigin}/watch?v=${vid}&format=${currentFormat}&q=${currentFormat === 'mp3' ? selectedAudioBitrate : selectedVideoResolution}`
-    : `${currentOrigin}/`;
+  const q = currentFormat === "mp3" ? selectedAudioBitrate : selectedVideoResolution;
 
-  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(mobileLink)}&color=FF4103&bgcolor=001621&format=svg`;
-  if (qrUrlText) qrUrlText.textContent = mobileLink;
+  let finalLink = "";
+  if (currentQrMode === "direct") {
+    finalLink = `${currentOrigin}/api/download?url=${encodeURIComponent('https://www.youtube.com/watch?v=' + vid)}&format=${currentFormat}&quality=${encodeURIComponent(q)}`;
+  } else {
+    finalLink = `${currentOrigin}/watch?v=${vid}&format=${currentFormat}&q=${q}`;
+  }
+
+  // Set high-compatibility QR URL with fallback
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(finalLink)}`;
+  qrImg.onerror = function() {
+    this.src = `https://quickchart.io/qr?text=${encodeURIComponent(finalLink)}&size=250`;
+  };
+
+  if (qrUrlText) qrUrlText.textContent = finalLink;
+
+  if (notice) {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      notice.classList.remove("hidden");
+    } else {
+      notice.classList.add("hidden");
+    }
+  }
+}
+
+function openQrModal() {
+  const modal = document.getElementById("qr-modal");
+  if (!modal) return;
+  updateQrContent();
   modal.classList.remove("hidden");
 }
 
@@ -942,6 +986,10 @@ function copyQrLink() {
     });
   }
 }
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeQrModal();
+});
 
 // Feature 6: URL Prefix Growth Hack (Auto-Load & Convert)
 function handleUrlPrefixAutoLoad() {

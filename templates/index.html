@@ -327,6 +327,12 @@
         <span>All Nodes Operational • FFmpeg 7.1 Active • 18ms latency</span>
       </div>
 
+        <!-- Beam to Phone Navbar Button -->
+        <button type="button" onclick="openQrModal()" class="btn-ghost font-mono text-xs text-slate-300 px-3 py-1.5 rounded-md hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer" title="Scan to open or download on mobile phone">
+          <span class="material-symbols-outlined text-sm text-[#FF4103]">qr_code_2</span>
+          <span>Beam to Phone</span>
+        </button>
+
         <!-- Owner Portfolio Link -->
         <a href="https://theabhijaychauhan.github.io/portfolio" target="_blank" rel="noopener noreferrer" class="btn-ghost font-mono text-xs text-slate-300 px-3 py-1.5 rounded-md hover:text-white transition-colors hidden sm:flex items-center gap-1.5" title="View Abhijay's Portfolio">
           <span class="material-symbols-outlined text-sm text-[#FF4103]">person</span>
@@ -789,27 +795,40 @@
   </footer>
 
   <!-- QR Code Modal (Feature 3: Beam to Phone) -->
-  <div id="qr-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4">
+  <div id="qr-modal" onclick="if(event.target === this) closeQrModal();" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4">
     <div class="glass-hero max-w-sm w-full rounded-2xl p-6 border border-[#FF4103]/30 space-y-4 shadow-2xl relative">
       <div class="flex items-center justify-between border-b border-white/10 pb-3">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-[#FF4103]">qr_code_scanner</span>
           <h3 class="text-sm font-medium text-white font-mono">Beam to Mobile Phone</h3>
         </div>
-        <button type="button" onclick="closeQrModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+        <button type="button" onclick="closeQrModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer p-1">
           <span class="material-symbols-outlined text-sm">close</span>
         </button>
       </div>
 
-      <div class="flex flex-col items-center justify-center p-4 bg-[#001018] rounded-xl border border-white/10">
-        <img id="qr-image" src="" alt="Mobile QR Code" class="w-48 h-48 rounded-lg bg-[#001621] p-2 border border-[#FF4103]/30 shadow-inner">
-        <p class="text-[11px] text-slate-400 font-mono text-center mt-3 leading-relaxed">
-          Point your iPhone Camera or Android QR Scanner to open and download instantly on your phone.
+      <!-- Mode Selector -->
+      <div class="flex items-center bg-[#001018] p-1 rounded-lg border border-white/10 text-[11px] font-mono">
+        <button type="button" id="qr-tab-direct" onclick="setQrMode('direct')" class="flex-1 py-1.5 rounded-md bg-[#00273a] text-white font-medium border border-[#FF4103]/40 transition-all cursor-pointer">
+          Direct Download
+        </button>
+        <button type="button" id="qr-tab-page" onclick="setQrMode('page')" class="flex-1 py-1.5 rounded-md text-slate-400 hover:text-white transition-all cursor-pointer">
+          Web Page
+        </button>
+      </div>
+
+      <div class="flex flex-col items-center justify-center p-4 bg-[#001018] rounded-xl border border-white/10 relative">
+        <img id="qr-image" src="" alt="Mobile QR Code" class="w-48 h-48 rounded-lg bg-white p-2 border border-[#FF4103]/30 shadow-md">
+        <p id="qr-desc-text" class="text-[11px] text-slate-400 font-mono text-center mt-3 leading-relaxed">
+          Point your iPhone Camera or Android QR Scanner to download directly to your phone.
         </p>
+        <div id="qr-localhost-notice" class="hidden mt-2 px-2.5 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[10px] font-mono text-center">
+          ⚡ On localhost: Phone must be on same Wi-Fi, or use your live Render URL.
+        </div>
       </div>
 
       <div class="space-y-2">
-        <div class="p-2.5 rounded-lg bg-black/40 border border-white/5 text-[10px] font-mono text-slate-400 truncate text-center" id="qr-url-text">
+        <div class="p-2.5 rounded-lg bg-black/40 border border-white/5 text-[10px] font-mono text-slate-400 truncate text-center select-all" id="qr-url-text">
           https://zenthyt.com/watch?v=...
         </div>
         <div class="flex gap-2">
@@ -818,7 +837,7 @@
             <span>Copy Link</span>
           </button>
           <button type="button" onclick="closeQrModal()" class="px-4 py-2 rounded-lg bg-[#00273a] hover:bg-[#003853] text-white text-xs font-mono font-medium border border-white/10 transition-all cursor-pointer">
-            Done
+            Close
           </button>
         </div>
       </div>
